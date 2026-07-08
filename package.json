@@ -1,0 +1,10 @@
+{
+  "name": "p2p-file-share",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev:worker": "pnpm --filter worker dev",
+    "dev:web": "pnpm --filter web dev",
+    "test": "pnpm --filter worker test && pnpm --filter web test"
+  }
+}
