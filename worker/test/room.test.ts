@@ -1,26 +1,24 @@
 import { describe, it, expect } from "vitest";
-import { Room } from "../src/room";
+import { SELF } from "cloudflare:test";
 
-function makeRoom(): Room {
-  const state = {
-    acceptWebSocket: () => {},
-    getWebSockets: () => [],
-  } as unknown as DurableObjectState;
-  return new Room(state, {} as Env);
-}
-
-describe("Room signaling", () => {
+describe("Worker routing", () => {
   it("rejects non-websocket requests with 426", async () => {
-    const room = makeRoom();
-    const res = await room.fetch(new Request("https://example.com/room?peerId=abc&deviceName=Test"));
+    const res = await SELF.fetch("https://example.com/room?peerId=abc&deviceName=Test");
     expect(res.status).toBe(426);
   });
 
   it("rejects websocket upgrade missing peerId", async () => {
-    const room = makeRoom();
-    const res = await room.fetch(
-      new Request("https://example.com/room", { headers: { Upgrade: "websocket" } })
-    );
+    const res = await SELF.fetch("https://example.com/room", {
+      headers: { Upgrade: "websocket" },
+    });
     expect(res.status).toBe(400);
+  });
+
+  it("accepts a valid websocket upgrade and returns 101", async () => {
+    const res = await SELF.fetch("https://example.com/room?peerId=abc&deviceName=Test", {
+      headers: { Upgrade: "websocket", "CF-Connecting-IP": "203.0.113.5" },
+    });
+    expect(res.status).toBe(101);
+    expect(res.webSocket).toBeDefined();
   });
 });
