@@ -26,11 +26,11 @@ export function TextDialog({ peerName, position, onSend, onClose }: Props) {
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} />
       <div
-        className="fixed z-50 -translate-x-1/2 flex flex-col gap-2 bg-slate-800 border border-slate-600 rounded-lg p-3 shadow-xl w-64"
+        className="fixed z-50 -translate-x-1/2 flex flex-col gap-2 bg-canvas-raised border border-canvas-deep rounded-xl p-3.5 shadow-2xl w-60"
         style={position}
         onClick={(event) => event.stopPropagation()}
       >
-        <p className="text-slate-300 text-xs">Send text to {peerName}</p>
+        <p className="font-serif text-[13.5px] text-ink">Send a note to {peerName}</p>
         <textarea
           ref={inputRef}
           value={text}
@@ -42,12 +42,13 @@ export function TextDialog({ peerName, position, onSend, onClose }: Props) {
               handleSend();
             }
           }}
-          className="bg-slate-900 text-white text-sm rounded p-2 resize-none h-20 outline-none border border-slate-700 focus:border-sky-400"
+          placeholder="Say something…"
+          className="bg-canvas text-ink placeholder:text-ink-faint text-[13px] rounded-lg p-2.5 resize-none h-[54px] outline-none border border-canvas-deep focus:border-accent focus:[outline:2px_solid_var(--accent)] focus:outline-offset-1"
         />
         <button
           type="button"
           onClick={handleSend}
-          className="bg-sky-500 hover:bg-sky-400 text-white text-sm rounded py-1.5 transition-colors"
+          className="bg-accent hover:bg-accent-strong text-canvas-raised text-[13px] font-semibold rounded-lg py-2 transition-colors"
         >
           Send
         </button>

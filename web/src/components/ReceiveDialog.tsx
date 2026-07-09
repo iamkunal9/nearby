@@ -55,19 +55,19 @@ export function ReceiveDialog({ item, onDismiss }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="bg-slate-800 border border-slate-600 rounded-lg p-5 w-80 flex flex-col gap-3">
-        <p className="text-slate-300 text-xs">From {item.peerName}</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40">
+      <div className="bg-canvas-raised border border-canvas-deep rounded-xl p-5 w-80 flex flex-col gap-3 shadow-2xl">
+        <p className="text-xs text-ink-faint">From {item.peerName}</p>
 
         {item.kind === "file" && (
           <>
-            {previewUrl && <img src={previewUrl} alt={item.name} className="rounded max-h-40 object-contain" />}
-            <p className="text-white text-sm break-all">{item.name}</p>
-            <p className="text-slate-400 text-xs">{formatBytes(item.blob.size)}</p>
+            {previewUrl && <img src={previewUrl} alt={item.name} className="rounded-lg max-h-40 object-contain" />}
+            <p className="font-serif text-[15px] text-ink break-all">{item.name}</p>
+            <p className="text-xs text-ink-faint">{formatBytes(item.blob.size)}</p>
             <button
               type="button"
               onClick={handleDownload}
-              className="bg-sky-500 hover:bg-sky-400 text-white text-sm rounded py-1.5 transition-colors"
+              className="bg-accent hover:bg-accent-strong text-canvas-raised text-[13px] font-semibold rounded-lg py-2 transition-colors"
             >
               Download
             </button>
@@ -81,21 +81,21 @@ export function ReceiveDialog({ item, onDismiss }: Props) {
                 href={item.content.trim()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sky-400 text-sm break-all underline"
+                className="text-accent text-sm break-all underline"
               >
                 {item.content}
               </a>
             ) : (
-              <p className="text-white text-sm break-all whitespace-pre-wrap">{item.content}</p>
+              <p className="text-ink text-sm break-all whitespace-pre-wrap">{item.content}</p>
             )}
-            {copied && <p className="text-emerald-400 text-xs">Copied to clipboard</p>}
+            {copied && <p className="text-accent text-xs">Copied to clipboard</p>}
           </>
         )}
 
         <button
           type="button"
           onClick={onDismiss}
-          className="text-slate-400 hover:text-slate-200 text-xs"
+          className="text-ink-faint hover:text-ink text-xs self-start"
         >
           Close
         </button>

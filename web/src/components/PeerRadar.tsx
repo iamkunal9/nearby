@@ -19,10 +19,6 @@ function hashString(value: string): number {
   return hash;
 }
 
-function peerColor(peerId: string): string {
-  return `hsl(${hashString(peerId) % 360}, 65%, 55%)`;
-}
-
 function peerPosition(peerId: string, index: number, count: number) {
   const angleStep = (2 * Math.PI) / count;
   const angleJitter = ((hashString(`${peerId}:angle`) % 1000) / 1000 - 0.5) * (angleStep * 0.4);
@@ -44,11 +40,13 @@ export function PeerRadar({ myDeviceName, peers, transfers, onSendFile, onSendTe
   const inputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
   const [textDialogPeer, setTextDialogPeer] = useState<PeerInfo | null>(null);
   const [textDialogPosition, setTextDialogPosition] = useState({ left: "50%", top: "50%" });
+  const [dragOverPeerId, setDragOverPeerId] = useState<string | null>(null);
   const longPressTimer = useRef<number | null>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   function handleDrop(event: DragEvent<HTMLDivElement>, peer: PeerInfo) {
     event.preventDefault();
+    setDragOverPeerId(null);
     const file = event.dataTransfer.files[0];
     if (file) onSendFile(peer, file);
   }
@@ -91,14 +89,33 @@ export function PeerRadar({ myDeviceName, peers, transfers, onSendFile, onSendTe
   }
 
   return (
-    <div className="relative w-[min(85vw,85vh,560px)] aspect-square mx-auto">
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2">
-        <div className="w-24 h-24 rounded-full bg-sky-500/20 border-2 border-sky-400 animate-pulse flex items-center justify-center">
-          <div className="w-14 h-14 rounded-full bg-sky-500/40" />
+    <div className="relative w-[min(66vmin,520px)] aspect-square mx-auto">
+      <div
+        className="absolute inset-0 rounded-full"
+        style={{ background: "radial-gradient(circle at 50% 50%, var(--canvas-raised) 0%, transparent 62%)" }}
+      />
+
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 z-[2]">
+        <div
+          className="relative w-12 h-12 rounded-full flex items-center justify-center font-serif text-[17px]"
+          style={{ background: "var(--accent-wash)", border: "1.5px solid var(--accent)", color: "var(--accent-strong)" }}
+        >
+          {[0, 1.3, 2.6].map((delay) => (
+            <span
+              key={delay}
+              className="absolute inset-0 rounded-full animate-scanpulse"
+              style={{ border: "1px solid var(--accent)", animationDelay: `${delay}s` }}
+            />
+          ))}
+          {myDeviceName.charAt(0)}
         </div>
-        <p className="text-slate-300 text-sm text-center">You are: {myDeviceName}</p>
+        <p className="text-[10.5px] tracking-[0.1em] uppercase" style={{ color: "var(--ink-faint)" }}>
+          You
+        </p>
         {peers.length === 0 && (
-          <p className="text-slate-500 text-xs text-center">Looking for devices on your network…</p>
+          <p className="text-xs text-center mt-1" style={{ color: "var(--ink-faint)" }}>
+            Looking for devices on your network…
+          </p>
         )}
       </div>
 
@@ -108,18 +125,28 @@ export function PeerRadar({ myDeviceName, peers, transfers, onSendFile, onSendTe
         const percent = transfer && transfer.fileSize > 0 ? transfer.bytesTransferred / transfer.fileSize : 0;
         const isComplete = transfer?.status === "complete";
         const isActive = transfer?.status === "in-progress";
+        const isDragOver = dragOverPeerId === peer.id;
+
+        let statusLabel = "On this network";
+        if (isActive) statusLabel = `${transfer!.direction === "send" ? "Sending" : "Receiving"} — ${Math.round(percent * 100)}%`;
+        else if (isComplete) statusLabel = transfer!.direction === "send" ? "Sent" : "Received";
 
         return (
           <div
             key={peer.id}
-            className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 cursor-pointer group"
+            className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2.5 cursor-pointer group z-[3] outline-none"
             style={position}
+            tabIndex={0}
             onClick={() => inputRefs.current.get(peer.id)?.click()}
             onContextMenu={(event) => handleContextMenu(event, peer)}
             onTouchStart={(event) => handleTouchStart(event, peer)}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            onDragOver={(event) => event.preventDefault()}
+            onDragOver={(event) => {
+              event.preventDefault();
+              setDragOverPeerId(peer.id);
+            }}
+            onDragLeave={() => setDragOverPeerId(null)}
             onDrop={(event) => handleDrop(event, peer)}
           >
             <input
@@ -137,21 +164,14 @@ export function PeerRadar({ myDeviceName, peers, transfers, onSendFile, onSendTe
             />
             <div className="relative w-16 h-16">
               <svg viewBox="0 0 64 64" className="absolute inset-0 w-16 h-16 -rotate-90">
-                <circle
-                  cx="32"
-                  cy="32"
-                  r={RING_RADIUS}
-                  fill="none"
-                  stroke="rgba(148, 163, 184, 0.25)"
-                  strokeWidth="3"
-                />
+                <circle cx="32" cy="32" r={RING_RADIUS} fill="none" stroke="var(--canvas-deep)" strokeWidth="3" />
                 {(isActive || isComplete) && (
                   <circle
                     cx="32"
                     cy="32"
                     r={RING_RADIUS}
                     fill="none"
-                    stroke="#38bdf8"
+                    stroke="var(--accent)"
                     strokeWidth="3"
                     strokeLinecap="round"
                     strokeDasharray={RING_CIRCUMFERENCE}
@@ -160,13 +180,37 @@ export function PeerRadar({ myDeviceName, peers, transfers, onSendFile, onSendTe
                 )}
               </svg>
               <div
-                className="absolute inset-0 m-1.5 rounded-full flex items-center justify-center text-white font-semibold animate-breathe group-hover:scale-110 transition-transform"
-                style={{ backgroundColor: peerColor(peer.id) }}
+                className={`absolute inset-0 m-1.5 rounded-full flex items-center justify-center font-serif text-[21px] bg-canvas-raised text-ink transition-[border-color,box-shadow,transform] duration-150 group-hover:-translate-y-0.5 group-hover:scale-105 group-hover:border-accent group-focus-visible:-translate-y-0.5 group-focus-visible:scale-105 group-focus-visible:border-accent group-focus-visible:[box-shadow:0_0_0_3px_var(--canvas),0_0_0_5px_var(--accent)] ${
+                  isDragOver ? "border-accent [box-shadow:0_0_0_5px_var(--accent-wash)]" : "border-canvas-deep shadow-[0_1px_2px_rgba(0,0,0,0.08)]"
+                }`}
+                style={{ borderWidth: "1.5px", borderStyle: "solid" }}
               >
-                {isComplete ? "✓" : peer.name.charAt(0)}
+                {isComplete ? (
+                  <svg viewBox="0 0 24 24" className="w-5 h-5" style={{ color: "var(--accent)" }} fill="none">
+                    <path
+                      d="M5 12.5l4.5 4.5L19 7"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                ) : (
+                  peer.name.charAt(0)
+                )}
               </div>
             </div>
-            <p className="text-slate-300 text-xs text-center max-w-[80px]">{peer.name}</p>
+            <div className="flex flex-col items-center gap-0.5">
+              <p className="font-serif text-[14.5px] text-center max-w-[90px]" style={{ color: "var(--ink)" }}>
+                {peer.name}
+              </p>
+              <p
+                className="text-[11.5px] tabular-nums text-center"
+                style={{ color: isActive || isComplete ? "var(--accent)" : "var(--ink-faint)" }}
+              >
+                {statusLabel}
+              </p>
+            </div>
           </div>
         );
       })}
