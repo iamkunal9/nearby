@@ -35,13 +35,16 @@ export function ReceiveDialog({ item, onDismiss }: Props) {
   }, [item]);
 
   useEffect(() => {
-    if (item.kind === "text" && !isUrl(item.content)) {
-      navigator.clipboard.writeText(item.content).then(
-        () => setCopied(true),
-        () => {}
-      );
-    }
+    setCopied(false);
   }, [item]);
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onDismiss();
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onDismiss]);
 
   function handleDownload() {
     if (item.kind !== "file") return;
@@ -54,20 +57,33 @@ export function ReceiveDialog({ item, onDismiss }: Props) {
     onDismiss();
   }
 
+  function handleCopy() {
+    if (item.kind !== "text") return;
+    navigator.clipboard.writeText(item.content).then(
+      () => setCopied(true),
+      () => {}
+    );
+  }
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40">
-      <div className="bg-canvas-raised border border-canvas-deep rounded-xl p-5 w-80 flex flex-col gap-3 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4" onClick={onDismiss}>
+      <div
+        className="bg-canvas-raised border border-canvas-deep rounded-xl p-5 w-full max-w-[min(90vw,380px)] flex flex-col gap-3 shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
         <p className="text-xs text-ink-faint">From {item.peerName}</p>
 
         {item.kind === "file" && (
           <>
-            {previewUrl && <img src={previewUrl} alt={item.name} className="rounded-lg max-h-40 object-contain" />}
+            {previewUrl && (
+              <img src={previewUrl} alt={item.name} className="rounded-lg max-h-[45vh] w-full object-contain" />
+            )}
             <p className="font-serif text-[15px] text-ink break-all">{item.name}</p>
             <p className="text-xs text-ink-faint">{formatBytes(item.blob.size)}</p>
             <button
               type="button"
               onClick={handleDownload}
-              className="bg-accent hover:bg-accent-strong text-canvas-raised text-[13px] font-semibold rounded-lg py-2 transition-colors"
+              className="bg-accent hover:bg-accent-strong text-canvas-raised text-[13px] font-semibold rounded-lg py-2.5 transition-colors"
             >
               Download
             </button>
@@ -88,7 +104,13 @@ export function ReceiveDialog({ item, onDismiss }: Props) {
             ) : (
               <p className="text-ink text-sm break-all whitespace-pre-wrap">{item.content}</p>
             )}
-            {copied && <p className="text-accent text-xs">Copied to clipboard</p>}
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="bg-accent hover:bg-accent-strong text-canvas-raised text-[13px] font-semibold rounded-lg py-2.5 transition-colors"
+            >
+              {copied ? "Copied" : "Copy"}
+            </button>
           </>
         )}
 

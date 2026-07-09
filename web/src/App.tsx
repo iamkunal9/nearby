@@ -164,7 +164,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col">
-      <header className="flex items-center justify-between px-5 sm:px-9 pt-6 sm:pt-7">
+      <header
+        className="flex items-center justify-between px-5 sm:px-9 pt-6 sm:pt-7"
+        style={{ paddingTop: "max(1.5rem, env(safe-area-inset-top))", paddingLeft: "max(1.25rem, env(safe-area-inset-left))", paddingRight: "max(1.25rem, env(safe-area-inset-right))" }}
+      >
         <div className="font-serif text-[19px]">
           near<em className="not-italic text-accent">by</em>
         </div>
@@ -191,7 +194,10 @@ export default function App() {
         </p>
       </main>
 
-      <footer className="px-5 sm:px-9 pb-6 text-xs text-ink-faint">
+      <footer
+        className="px-5 sm:px-9 pb-6 text-xs text-ink-faint"
+        style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))", paddingLeft: "max(1.25rem, env(safe-area-inset-left))", paddingRight: "max(1.25rem, env(safe-area-inset-right))" }}
+      >
         Visible as <span className="font-serif text-ink-soft">{myDeviceName}</span> on this network
       </footer>
 

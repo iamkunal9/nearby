@@ -58,8 +58,12 @@ export function PeerRadar({ myDeviceName, peers, transfers, onSendFile, onSendTe
       Math.max(clientX, dialogHalfWidth + margin),
       window.innerWidth - dialogHalfWidth - margin
     );
+    // The note textarea autofocuses, which opens the on-screen keyboard on mobile
+    // after this position is set. Bias toward the upper half of the screen so the
+    // dialog stays clear of the keyboard once it appears.
+    const clampedY = Math.min(clientY, window.innerHeight * 0.45);
     setTextDialogPeer(peer);
-    setTextDialogPosition({ left: `${clampedX}px`, top: `${clientY}px` });
+    setTextDialogPosition({ left: `${clampedX}px`, top: `${clampedY}px` });
   }
 
   function handleContextMenu(event: MouseEvent<HTMLDivElement>, peer: PeerInfo) {
@@ -101,7 +105,7 @@ export function PeerRadar({ myDeviceName, peers, transfers, onSendFile, onSendTe
         style={{ background: "radial-gradient(circle at 50% 50%, var(--canvas-raised) 0%, transparent 62%)" }}
       />
 
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 sm:gap-2 z-[2]">
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 sm:gap-2 z-[2] select-none">
         <div
           className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center font-serif text-[15px] sm:text-[17px]"
           style={{ background: "var(--accent-wash)", border: "1.5px solid var(--accent)", color: "var(--accent-strong)" }}
@@ -140,7 +144,7 @@ export function PeerRadar({ myDeviceName, peers, transfers, onSendFile, onSendTe
         return (
           <div
             key={peer.id}
-            className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 sm:gap-2.5 cursor-pointer group z-[3] outline-none"
+            className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 sm:gap-2.5 cursor-pointer group z-[3] outline-none select-none touch-manipulation [-webkit-touch-callout:none] [-webkit-tap-highlight-color:transparent]"
             style={position}
             tabIndex={0}
             onClick={() => inputRefs.current.get(peer.id)?.click()}
