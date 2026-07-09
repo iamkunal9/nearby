@@ -11,6 +11,14 @@ interface Props {
   onSendText: (peer: PeerInfo, text: string) => void;
 }
 
+interface PeerView {
+  peer: PeerInfo;
+  percent: number;
+  isComplete: boolean;
+  isActive: boolean;
+  statusLabel: string;
+}
+
 function hashString(value: string): number {
   let hash = 0;
   for (let i = 0; i < value.length; i++) {
@@ -24,15 +32,37 @@ function peerPosition(peerId: string, index: number, count: number) {
   const angleJitter = ((hashString(`${peerId}:angle`) % 1000) / 1000 - 0.5) * (angleStep * 0.4);
   const angle = index * angleStep + angleJitter - Math.PI / 2;
   const radiusJitter = ((hashString(`${peerId}:radius`) % 1000) / 1000 - 0.5) * 6;
-  const radiusPct = 34 + radiusJitter;
+  const radiusPct = 36 + radiusJitter;
   return {
     left: `${50 + radiusPct * Math.cos(angle)}%`,
     top: `${50 + radiusPct * Math.sin(angle)}%`,
   };
 }
 
+function buildPeerView(peer: PeerInfo, transfer: TransferState | undefined): PeerView {
+  const percent = transfer && transfer.fileSize > 0 ? transfer.bytesTransferred / transfer.fileSize : 0;
+  const isComplete = transfer?.status === "complete";
+  const isActive = transfer?.status === "in-progress";
+
+  let statusLabel = "On this network";
+  if (isActive) statusLabel = `${transfer!.direction === "send" ? "Sending" : "Receiving"} — ${Math.round(percent * 100)}%`;
+  else if (isComplete) statusLabel = transfer!.direction === "send" ? "Sent" : "Received";
+
+  return { peer, percent, isComplete, isActive, statusLabel };
+}
+
+function CheckIcon({ size }: { size: number }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} style={{ color: "var(--accent)" }} fill="none">
+      <path d="M5 12.5l4.5 4.5L19 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 const RING_RADIUS = 26;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+const LIST_RING_RADIUS = 20;
+const LIST_RING_CIRCUMFERENCE = 2 * Math.PI * LIST_RING_RADIUS;
 const LONG_PRESS_MS = 610;
 const LONG_PRESS_MOVE_TOLERANCE = 10;
 
@@ -44,6 +74,8 @@ export function PeerRadar({ myDeviceName, peers, transfers, onSendFile, onSendTe
   const longPressTimer = useRef<number | null>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
 
+  const peerViews = peers.map((peer) => buildPeerView(peer, transfers[peer.id]));
+
   function handleDrop(event: DragEvent<HTMLDivElement>, peer: PeerInfo) {
     event.preventDefault();
     setDragOverPeerId(null);
@@ -52,8 +84,14 @@ export function PeerRadar({ myDeviceName, peers, transfers, onSendFile, onSendTe
   }
 
   function openTextDialog(peer: PeerInfo, clientX: number, clientY: number) {
+    const dialogHalfWidth = 120;
+    const margin = 12;
+    const clampedX = Math.min(
+      Math.max(clientX, dialogHalfWidth + margin),
+      window.innerWidth - dialogHalfWidth - margin
+    );
     setTextDialogPeer(peer);
-    setTextDialogPosition({ left: `${clientX}px`, top: `${clientY}px` });
+    setTextDialogPosition({ left: `${clampedX}px`, top: `${clientY}px` });
   }
 
   function handleContextMenu(event: MouseEvent<HTMLDivElement>, peer: PeerInfo) {
@@ -88,132 +126,198 @@ export function PeerRadar({ myDeviceName, peers, transfers, onSendFile, onSendTe
     touchStart.current = null;
   }
 
-  return (
-    <div className="relative w-[min(66vmin,520px)] aspect-square mx-auto">
-      <div
-        className="absolute inset-0 rounded-full"
-        style={{ background: "radial-gradient(circle at 50% 50%, var(--canvas-raised) 0%, transparent 62%)" }}
+  function fileInput(refKey: string, peer: PeerInfo) {
+    return (
+      <input
+        ref={(el) => {
+          if (el) inputRefs.current.set(refKey, el);
+          else inputRefs.current.delete(refKey);
+        }}
+        type="file"
+        className="hidden"
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (file) onSendFile(peer, file);
+          event.target.value = "";
+        }}
       />
+    );
+  }
 
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 z-[2]">
+  return (
+    <>
+      {/* Desktop / wide-viewport orbit layout */}
+      <div className="relative w-[min(66vmin,520px)] aspect-square mx-auto hidden sm:block">
         <div
-          className="relative w-12 h-12 rounded-full flex items-center justify-center font-serif text-[17px]"
-          style={{ background: "var(--accent-wash)", border: "1.5px solid var(--accent)", color: "var(--accent-strong)" }}
-        >
-          {[0, 1.3, 2.6].map((delay) => (
-            <span
-              key={delay}
-              className="absolute inset-0 rounded-full animate-scanpulse"
-              style={{ border: "1px solid var(--accent)", animationDelay: `${delay}s` }}
-            />
-          ))}
-          {myDeviceName.charAt(0)}
-        </div>
-        <p className="text-[10.5px] tracking-[0.1em] uppercase" style={{ color: "var(--ink-faint)" }}>
-          You
-        </p>
-        {peers.length === 0 && (
-          <p className="text-xs text-center mt-1" style={{ color: "var(--ink-faint)" }}>
-            Looking for devices on your network…
-          </p>
-        )}
-      </div>
+          className="absolute inset-0 rounded-full"
+          style={{ background: "radial-gradient(circle at 50% 50%, var(--canvas-raised) 0%, transparent 62%)" }}
+        />
 
-      {peers.map((peer, index) => {
-        const position = peerPosition(peer.id, index, peers.length);
-        const transfer = transfers[peer.id];
-        const percent = transfer && transfer.fileSize > 0 ? transfer.bytesTransferred / transfer.fileSize : 0;
-        const isComplete = transfer?.status === "complete";
-        const isActive = transfer?.status === "in-progress";
-        const isDragOver = dragOverPeerId === peer.id;
-
-        let statusLabel = "On this network";
-        if (isActive) statusLabel = `${transfer!.direction === "send" ? "Sending" : "Receiving"} — ${Math.round(percent * 100)}%`;
-        else if (isComplete) statusLabel = transfer!.direction === "send" ? "Sent" : "Received";
-
-        return (
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 z-[2]">
           <div
-            key={peer.id}
-            className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2.5 cursor-pointer group z-[3] outline-none"
-            style={position}
-            tabIndex={0}
-            onClick={() => inputRefs.current.get(peer.id)?.click()}
-            onContextMenu={(event) => handleContextMenu(event, peer)}
-            onTouchStart={(event) => handleTouchStart(event, peer)}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            onDragOver={(event) => {
-              event.preventDefault();
-              setDragOverPeerId(peer.id);
-            }}
-            onDragLeave={() => setDragOverPeerId(null)}
-            onDrop={(event) => handleDrop(event, peer)}
+            className="relative w-12 h-12 rounded-full flex items-center justify-center font-serif text-[17px]"
+            style={{ background: "var(--accent-wash)", border: "1.5px solid var(--accent)", color: "var(--accent-strong)" }}
           >
-            <input
-              ref={(el) => {
-                if (el) inputRefs.current.set(peer.id, el);
-                else inputRefs.current.delete(peer.id);
+            {[0, 1.3, 2.6].map((delay) => (
+              <span
+                key={delay}
+                className="absolute inset-0 rounded-full animate-scanpulse"
+                style={{ border: "1px solid var(--accent)", animationDelay: `${delay}s` }}
+              />
+            ))}
+            {myDeviceName.charAt(0)}
+          </div>
+          <p className="text-[10.5px] tracking-[0.1em] uppercase" style={{ color: "var(--ink-faint)" }}>
+            You
+          </p>
+          {peers.length === 0 && (
+            <p className="text-xs text-center mt-1" style={{ color: "var(--ink-faint)" }}>
+              Looking for devices on your network…
+            </p>
+          )}
+        </div>
+
+        {peerViews.map(({ peer, percent, isComplete, isActive, statusLabel }, index) => {
+          const position = peerPosition(peer.id, index, peers.length);
+          const isDragOver = dragOverPeerId === peer.id;
+
+          return (
+            <div
+              key={peer.id}
+              className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2.5 cursor-pointer group z-[3] outline-none"
+              style={position}
+              tabIndex={0}
+              onClick={() => inputRefs.current.get(`orbit:${peer.id}`)?.click()}
+              onContextMenu={(event) => handleContextMenu(event, peer)}
+              onTouchStart={(event) => handleTouchStart(event, peer)}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onDragOver={(event) => {
+                event.preventDefault();
+                setDragOverPeerId(peer.id);
               }}
-              type="file"
-              className="hidden"
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                if (file) onSendFile(peer, file);
-                event.target.value = "";
-              }}
-            />
-            <div className="relative w-16 h-16">
-              <svg viewBox="0 0 64 64" className="absolute inset-0 w-16 h-16 -rotate-90">
-                <circle cx="32" cy="32" r={RING_RADIUS} fill="none" stroke="var(--canvas-deep)" strokeWidth="3" />
-                {(isActive || isComplete) && (
-                  <circle
-                    cx="32"
-                    cy="32"
-                    r={RING_RADIUS}
-                    fill="none"
-                    stroke="var(--accent)"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeDasharray={RING_CIRCUMFERENCE}
-                    strokeDashoffset={RING_CIRCUMFERENCE * (1 - (isComplete ? 1 : percent))}
-                  />
-                )}
-              </svg>
-              <div
-                className={`absolute inset-0 m-1.5 rounded-full flex items-center justify-center font-serif text-[21px] bg-canvas-raised text-ink transition-[border-color,box-shadow,transform] duration-150 group-hover:-translate-y-0.5 group-hover:scale-105 group-hover:border-accent group-focus-visible:-translate-y-0.5 group-focus-visible:scale-105 group-focus-visible:border-accent group-focus-visible:[box-shadow:0_0_0_3px_var(--canvas),0_0_0_5px_var(--accent)] ${
-                  isDragOver ? "border-accent [box-shadow:0_0_0_5px_var(--accent-wash)]" : "border-canvas-deep shadow-[0_1px_2px_rgba(0,0,0,0.08)]"
-                }`}
-                style={{ borderWidth: "1.5px", borderStyle: "solid" }}
-              >
-                {isComplete ? (
-                  <svg viewBox="0 0 24 24" className="w-5 h-5" style={{ color: "var(--accent)" }} fill="none">
-                    <path
-                      d="M5 12.5l4.5 4.5L19 7"
-                      stroke="currentColor"
-                      strokeWidth="2.2"
+              onDragLeave={() => setDragOverPeerId(null)}
+              onDrop={(event) => handleDrop(event, peer)}
+            >
+              {fileInput(`orbit:${peer.id}`, peer)}
+              <div className="relative w-16 h-16">
+                <svg viewBox="0 0 64 64" className="absolute inset-0 w-16 h-16 -rotate-90">
+                  <circle cx="32" cy="32" r={RING_RADIUS} fill="none" stroke="var(--canvas-deep)" strokeWidth="3" />
+                  {(isActive || isComplete) && (
+                    <circle
+                      cx="32"
+                      cy="32"
+                      r={RING_RADIUS}
+                      fill="none"
+                      stroke="var(--accent)"
+                      strokeWidth="3"
                       strokeLinecap="round"
-                      strokeLinejoin="round"
+                      strokeDasharray={RING_CIRCUMFERENCE}
+                      strokeDashoffset={RING_CIRCUMFERENCE * (1 - (isComplete ? 1 : percent))}
                     />
-                  </svg>
-                ) : (
-                  peer.name.charAt(0)
-                )}
+                  )}
+                </svg>
+                <div
+                  className={`absolute inset-0 m-1.5 rounded-full flex items-center justify-center font-serif text-[21px] bg-canvas-raised text-ink transition-[border-color,box-shadow,transform] duration-150 group-hover:-translate-y-0.5 group-hover:scale-105 group-hover:border-accent group-focus-visible:-translate-y-0.5 group-focus-visible:scale-105 group-focus-visible:border-accent group-focus-visible:[box-shadow:0_0_0_3px_var(--canvas),0_0_0_5px_var(--accent)] ${
+                    isDragOver ? "border-accent [box-shadow:0_0_0_5px_var(--accent-wash)]" : "border-canvas-deep shadow-[0_1px_2px_rgba(0,0,0,0.08)]"
+                  }`}
+                  style={{ borderWidth: "1.5px", borderStyle: "solid" }}
+                >
+                  {isComplete ? <CheckIcon size={20} /> : peer.name.charAt(0)}
+                </div>
+              </div>
+              <div className="flex flex-col items-center gap-0.5">
+                <p className="font-serif text-[14.5px] text-center max-w-[110px]" style={{ color: "var(--ink)" }}>
+                  {peer.name}
+                </p>
+                <p
+                  className="text-[11.5px] tabular-nums text-center"
+                  style={{ color: isActive || isComplete ? "var(--accent)" : "var(--ink-faint)" }}
+                >
+                  {statusLabel}
+                </p>
               </div>
             </div>
-            <div className="flex flex-col items-center gap-0.5">
-              <p className="font-serif text-[14.5px] text-center max-w-[90px]" style={{ color: "var(--ink)" }}>
-                {peer.name}
-              </p>
-              <p
-                className="text-[11.5px] tabular-nums text-center"
-                style={{ color: isActive || isComplete ? "var(--accent)" : "var(--ink-faint)" }}
-              >
-                {statusLabel}
-              </p>
+          );
+        })}
+      </div>
+
+      {/* Narrow-viewport presence list */}
+      <div className="w-full max-w-md mx-auto flex flex-col sm:hidden">
+        <div className="flex items-center gap-2 pb-4 px-1">
+          <span className="relative flex h-2.5 w-2.5 shrink-0">
+            <span
+              className="absolute inline-flex h-full w-full rounded-full opacity-60 animate-ping"
+              style={{ background: "var(--accent)" }}
+            />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5" style={{ background: "var(--accent)" }} />
+          </span>
+          <p className="text-xs" style={{ color: "var(--ink-faint)" }}>
+            {peers.length === 0 ? "Looking for devices on your network…" : `You: ${myDeviceName}`}
+          </p>
+        </div>
+
+        {peerViews.map(({ peer, percent, isComplete, isActive, statusLabel }) => {
+          const isDragOver = dragOverPeerId === peer.id;
+
+          return (
+            <div
+              key={peer.id}
+              className="flex items-center gap-3 py-3 px-2 -mx-2 rounded-xl cursor-pointer transition-colors active:bg-canvas-raised outline-none focus-visible:bg-canvas-raised"
+              style={isDragOver ? { background: "var(--accent-wash)" } : undefined}
+              tabIndex={0}
+              onClick={() => inputRefs.current.get(`list:${peer.id}`)?.click()}
+              onContextMenu={(event) => handleContextMenu(event, peer)}
+              onTouchStart={(event) => handleTouchStart(event, peer)}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onDragOver={(event) => {
+                event.preventDefault();
+                setDragOverPeerId(peer.id);
+              }}
+              onDragLeave={() => setDragOverPeerId(null)}
+              onDrop={(event) => handleDrop(event, peer)}
+            >
+              {fileInput(`list:${peer.id}`, peer)}
+              <div className="relative w-12 h-12 shrink-0">
+                <svg viewBox="0 0 48 48" className="absolute inset-0 w-12 h-12 -rotate-90">
+                  <circle cx="24" cy="24" r={LIST_RING_RADIUS} fill="none" stroke="var(--canvas-deep)" strokeWidth="2.5" />
+                  {(isActive || isComplete) && (
+                    <circle
+                      cx="24"
+                      cy="24"
+                      r={LIST_RING_RADIUS}
+                      fill="none"
+                      stroke="var(--accent)"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeDasharray={LIST_RING_CIRCUMFERENCE}
+                      strokeDashoffset={LIST_RING_CIRCUMFERENCE * (1 - (isComplete ? 1 : percent))}
+                    />
+                  )}
+                </svg>
+                <div
+                  className="absolute inset-0 m-1 rounded-full flex items-center justify-center font-serif text-[16px] bg-canvas-raised text-ink"
+                  style={{ border: `1.5px solid ${isDragOver ? "var(--accent)" : "var(--canvas-deep)"}` }}
+                >
+                  {isComplete ? <CheckIcon size={16} /> : peer.name.charAt(0)}
+                </div>
+              </div>
+              <div className="flex flex-col min-w-0">
+                <p className="font-serif text-[15px] truncate" style={{ color: "var(--ink)" }}>
+                  {peer.name}
+                </p>
+                <p
+                  className="text-[12px] tabular-nums"
+                  style={{ color: isActive || isComplete ? "var(--accent)" : "var(--ink-faint)" }}
+                >
+                  {statusLabel}
+                </p>
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
 
       {textDialogPeer && (
         <TextDialog
@@ -223,6 +327,6 @@ export function PeerRadar({ myDeviceName, peers, transfers, onSendFile, onSendTe
           onClose={() => setTextDialogPeer(null)}
         />
       )}
-    </div>
+    </>
   );
 }

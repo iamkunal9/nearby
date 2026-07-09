@@ -5,6 +5,7 @@ import { PeerConnection } from "./lib/webrtc";
 import { notifyReceived, playBlop, requestNotificationPermission } from "./lib/notifications";
 import { PeerRadar } from "./components/PeerRadar";
 import { ReceiveDialog } from "./components/ReceiveDialog";
+import { SettingsMenu } from "./components/SettingsMenu";
 import type { PeerInfo } from "./lib/protocol";
 
 const SIGNALING_URL = import.meta.env.VITE_SIGNALING_URL ?? "ws://localhost:8787/room";
@@ -152,30 +153,18 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col">
-      <header className="flex items-center justify-between px-9 pt-7">
+      <header className="flex items-center justify-between px-5 sm:px-9 pt-6 sm:pt-7">
         <div className="font-serif text-[19px]">
           near<em className="not-italic text-accent">by</em>
         </div>
-        <div className="flex items-center gap-4 text-xs text-ink-faint">
-          <label className="flex items-center gap-1.5">
-            <input
-              type="checkbox"
-              checked={autoDownload}
-              onChange={(event) => setAutoDownload(event.target.checked)}
-            />
-            Auto-download files
-          </label>
-          <button
-            type="button"
-            onClick={() => void requestNotificationPermission()}
-            className="underline hover:text-ink transition-colors"
-          >
-            Enable notifications
-          </button>
-        </div>
+        <SettingsMenu
+          autoDownload={autoDownload}
+          onAutoDownloadChange={setAutoDownload}
+          onEnableNotifications={() => void requestNotificationPermission()}
+        />
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center gap-6 px-9 py-6">
+      <main className="flex-1 flex flex-col items-center justify-start sm:justify-center gap-6 px-5 sm:px-9 py-6 sm:py-6 pt-2 sm:pt-6">
         <PeerRadar
           myDeviceName={myDeviceName}
           peers={peers}
@@ -183,14 +172,15 @@ export default function App() {
           onSendFile={handleSendFile}
           onSendText={handleSendText}
         />
-        <p className="text-xs text-ink-faint text-center">
+        <p className="text-xs text-ink-faint text-center max-w-xs sm:max-w-none">
           Right-click or hold a name to send a note
-          <span className="mx-2.5 opacity-50">·</span>
+          <span className="mx-2.5 opacity-50 hidden sm:inline">·</span>
+          <br className="sm:hidden" />
           Drop a file on someone to send it directly
         </p>
       </main>
 
-      <footer className="px-9 pb-6 text-xs text-ink-faint">
+      <footer className="px-5 sm:px-9 pb-6 text-xs text-ink-faint">
         Visible as <span className="font-serif text-ink-soft">{myDeviceName}</span> on this network
       </footer>
 
