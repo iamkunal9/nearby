@@ -36,7 +36,10 @@ export function ReceiveDialog({ item, onDismiss }: Props) {
 
   useEffect(() => {
     if (item.kind === "text" && !isUrl(item.content)) {
-      navigator.clipboard.writeText(item.content).then(() => setCopied(true));
+      navigator.clipboard.writeText(item.content).then(
+        () => setCopied(true),
+        () => {}
+      );
     }
   }, [item]);
 
