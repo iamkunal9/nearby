@@ -17,6 +17,13 @@ interface FileHeader {
   size: number;
 }
 
+interface TextMessage {
+  type: "text";
+  content: string;
+}
+
+type ChannelStringMessage = FileHeader | TextMessage;
+
 export class PeerConnection {
   private pc: RTCPeerConnection;
   private channel: RTCDataChannel | null = null;
@@ -27,6 +34,7 @@ export class PeerConnection {
 
   onFileReceived: (file: Blob, name: string) => void = () => {};
   onProgress: (bytesReceived: number, totalBytes: number) => void = () => {};
+  onTextReceived: (text: string) => void = () => {};
 
   constructor(private onIceCandidate: (candidate: RTCIceCandidateInit) => void) {
     this.pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
@@ -58,6 +66,15 @@ export class PeerConnection {
 
   async addIceCandidate(candidate: RTCIceCandidateInit): Promise<void> {
     await this.pc.addIceCandidate(candidate);
+  }
+
+  async sendText(text: string): Promise<void> {
+    const channel = this.channel;
+    if (!channel) throw new Error("Data channel not open");
+    await this.channelOpen;
+
+    const message: TextMessage = { type: "text", content: text };
+    channel.send(JSON.stringify(message));
   }
 
   async sendFile(file: File, onProgress: (bytesSent: number) => void): Promise<void> {
@@ -106,8 +123,12 @@ export class PeerConnection {
 
   private handleIncoming(data: string | ArrayBuffer): void {
     if (typeof data === "string") {
-      const header = JSON.parse(data) as FileHeader;
-      this.incomingHeader = header;
+      const message = JSON.parse(data) as ChannelStringMessage;
+      if (message.type === "text") {
+        this.onTextReceived(message.content);
+        return;
+      }
+      this.incomingHeader = message;
       this.incomingChunks = [];
       this.incomingBytes = 0;
       return;
