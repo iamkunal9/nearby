@@ -1,12 +1,14 @@
-import { useRef, type DragEvent } from "react";
+import { useRef, useState, type DragEvent, type MouseEvent, type TouchEvent } from "react";
 import type { PeerInfo } from "../lib/protocol";
 import type { TransferState } from "../store/useStore";
+import { TextDialog } from "./TextDialog";
 
 interface Props {
   myDeviceName: string;
   peers: PeerInfo[];
   transfers: Record<string, TransferState>;
   onSendFile: (peer: PeerInfo, file: File) => void;
+  onSendText: (peer: PeerInfo, text: string) => void;
 }
 
 function hashString(value: string): number {
@@ -35,14 +37,57 @@ function peerPosition(peerId: string, index: number, count: number) {
 
 const RING_RADIUS = 26;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+const LONG_PRESS_MS = 610;
+const LONG_PRESS_MOVE_TOLERANCE = 10;
 
-export function PeerRadar({ myDeviceName, peers, transfers, onSendFile }: Props) {
+export function PeerRadar({ myDeviceName, peers, transfers, onSendFile, onSendText }: Props) {
   const inputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
+  const [textDialogPeer, setTextDialogPeer] = useState<PeerInfo | null>(null);
+  const [textDialogPosition, setTextDialogPosition] = useState({ left: "50%", top: "50%" });
+  const longPressTimer = useRef<number | null>(null);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   function handleDrop(event: DragEvent<HTMLDivElement>, peer: PeerInfo) {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file) onSendFile(peer, file);
+  }
+
+  function openTextDialog(peer: PeerInfo, clientX: number, clientY: number) {
+    setTextDialogPeer(peer);
+    setTextDialogPosition({ left: `${clientX}px`, top: `${clientY}px` });
+  }
+
+  function handleContextMenu(event: MouseEvent<HTMLDivElement>, peer: PeerInfo) {
+    event.preventDefault();
+    openTextDialog(peer, event.clientX, event.clientY);
+  }
+
+  function handleTouchStart(event: TouchEvent<HTMLDivElement>, peer: PeerInfo) {
+    const touch = event.touches[0];
+    touchStart.current = { x: touch.clientX, y: touch.clientY };
+    longPressTimer.current = window.setTimeout(() => {
+      openTextDialog(peer, touch.clientX, touch.clientY);
+    }, LONG_PRESS_MS);
+  }
+
+  function handleTouchMove(event: TouchEvent<HTMLDivElement>) {
+    if (!touchStart.current || longPressTimer.current === null) return;
+    const touch = event.touches[0];
+    const dx = touch.clientX - touchStart.current.x;
+    const dy = touch.clientY - touchStart.current.y;
+    if (Math.hypot(dx, dy) > LONG_PRESS_MOVE_TOLERANCE) {
+      window.clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }
+
+  function handleTouchEnd() {
+    if (longPressTimer.current !== null) {
+      window.clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+    touchStart.current = null;
   }
 
   return (
@@ -70,6 +115,10 @@ export function PeerRadar({ myDeviceName, peers, transfers, onSendFile }: Props)
             className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-2 cursor-pointer group"
             style={position}
             onClick={() => inputRefs.current.get(peer.id)?.click()}
+            onContextMenu={(event) => handleContextMenu(event, peer)}
+            onTouchStart={(event) => handleTouchStart(event, peer)}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
             onDragOver={(event) => event.preventDefault()}
             onDrop={(event) => handleDrop(event, peer)}
           >
@@ -121,6 +170,15 @@ export function PeerRadar({ myDeviceName, peers, transfers, onSendFile }: Props)
           </div>
         );
       })}
+
+      {textDialogPeer && (
+        <TextDialog
+          peerName={textDialogPeer.name}
+          position={textDialogPosition}
+          onSend={(text) => onSendText(textDialogPeer, text)}
+          onClose={() => setTextDialogPeer(null)}
+        />
+      )}
     </div>
   );
 }
