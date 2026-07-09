@@ -52,6 +52,17 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    function handleVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        signalingRef.current?.reconnectNow();
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
+
+  useEffect(() => {
     function handlePaste(event: ClipboardEvent) {
       if (peersRef.current.length !== 1) return;
       const item = Array.from(event.clipboardData?.items ?? []).find((entry) => entry.type.startsWith("image/"));
@@ -164,7 +175,7 @@ export default function App() {
         />
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-start sm:justify-center gap-6 px-5 sm:px-9 py-6 sm:py-6 pt-2 sm:pt-6">
+      <main className="flex-1 flex flex-col items-center justify-center gap-6 px-5 sm:px-9 py-6">
         <PeerRadar
           myDeviceName={myDeviceName}
           peers={peers}
