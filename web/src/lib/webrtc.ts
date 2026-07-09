@@ -15,6 +15,7 @@ interface FileHeader {
   type: "file-header";
   name: string;
   size: number;
+  mimeType: string;
 }
 
 interface TextMessage {
@@ -82,7 +83,7 @@ export class PeerConnection {
     if (!channel) throw new Error("Data channel not open");
     await this.channelOpen;
 
-    const header: FileHeader = { type: "file-header", name: file.name, size: file.size };
+    const header: FileHeader = { type: "file-header", name: file.name, size: file.size, mimeType: file.type };
     channel.send(JSON.stringify(header));
 
     let offset = 0;
@@ -141,7 +142,7 @@ export class PeerConnection {
 
     this.onProgress(this.incomingBytes, header.size);
     if (this.incomingBytes >= header.size) {
-      const blob = new Blob(this.incomingChunks);
+      const blob = new Blob(this.incomingChunks, { type: header.mimeType });
       this.onFileReceived(blob, header.name);
       this.incomingChunks = [];
       this.incomingHeader = null;
