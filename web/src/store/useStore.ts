@@ -10,15 +10,26 @@ export interface TransferState {
   status: "in-progress" | "complete" | "failed";
 }
 
+export type ReceivedItem =
+  | { kind: "file"; blob: Blob; name: string; peerName: string }
+  | { kind: "text"; content: string; peerName: string };
+
+const AUTO_DOWNLOAD_KEY = "p2p-auto-download";
+
 interface Store {
   myPeerId: string;
   myDeviceName: string;
   peers: PeerInfo[];
   transfers: Record<string, TransferState>;
+  receiveQueue: ReceivedItem[];
+  autoDownload: boolean;
   setPeers: (peers: PeerInfo[]) => void;
   addPeer: (peer: PeerInfo) => void;
   removePeer: (peerId: string) => void;
   upsertTransfer: (transfer: TransferState) => void;
+  enqueueReceived: (item: ReceivedItem) => void;
+  dequeueReceived: () => void;
+  setAutoDownload: (value: boolean) => void;
 }
 
 function randomDeviceName(): string {
@@ -29,11 +40,17 @@ function randomDeviceName(): string {
   return `${adjective} ${noun}`;
 }
 
+function readAutoDownload(): boolean {
+  return localStorage.getItem(AUTO_DOWNLOAD_KEY) === "true";
+}
+
 export const useStore = create<Store>((set) => ({
   myPeerId: crypto.randomUUID(),
   myDeviceName: randomDeviceName(),
   peers: [],
   transfers: {},
+  receiveQueue: [],
+  autoDownload: readAutoDownload(),
   setPeers: (peers) => set({ peers }),
   addPeer: (peer) =>
     set((state) => ({
@@ -45,4 +62,12 @@ export const useStore = create<Store>((set) => ({
     set((state) => ({
       transfers: { ...state.transfers, [transfer.peerId]: transfer },
     })),
+  enqueueReceived: (item) =>
+    set((state) => ({ receiveQueue: [...state.receiveQueue, item] })),
+  dequeueReceived: () =>
+    set((state) => ({ receiveQueue: state.receiveQueue.slice(1) })),
+  setAutoDownload: (value) => {
+    localStorage.setItem(AUTO_DOWNLOAD_KEY, String(value));
+    set({ autoDownload: value });
+  },
 }));
