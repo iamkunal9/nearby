@@ -20,6 +20,7 @@ interface FileHeader {
 export class PeerConnection {
   private pc: RTCPeerConnection;
   private channel: RTCDataChannel | null = null;
+  private channelOpen: Promise<void> | null = null;
   private incomingChunks: ArrayBuffer[] = [];
   private incomingHeader: FileHeader | null = null;
   private incomingBytes = 0;
@@ -62,6 +63,7 @@ export class PeerConnection {
   async sendFile(file: File, onProgress: (bytesSent: number) => void): Promise<void> {
     const channel = this.channel;
     if (!channel) throw new Error("Data channel not open");
+    await this.channelOpen;
 
     const header: FileHeader = { type: "file-header", name: file.name, size: file.size };
     channel.send(JSON.stringify(header));
@@ -94,6 +96,12 @@ export class PeerConnection {
     channel.bufferedAmountLowThreshold = BUFFERED_AMOUNT_LOW_THRESHOLD;
     channel.onmessage = (event) => this.handleIncoming(event.data);
     this.channel = channel;
+    this.channelOpen =
+      channel.readyState === "open"
+        ? Promise.resolve()
+        : new Promise((resolve) => {
+            channel.addEventListener("open", () => resolve(), { once: true });
+          });
   }
 
   private handleIncoming(data: string | ArrayBuffer): void {
