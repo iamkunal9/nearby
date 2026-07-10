@@ -68,7 +68,7 @@ export function ReceiveDialog({ item, onDismiss }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4" onClick={onDismiss}>
       <div
-        className="bg-canvas-raised border border-canvas-deep rounded-xl p-5 w-full max-w-[min(90vw,380px)] flex flex-col gap-3 shadow-2xl"
+        className="bg-canvas-raised border border-canvas-deep rounded-xl p-5 w-full max-w-[min(90vw,380px)] max-h-[85vh] overflow-y-auto overscroll-contain flex flex-col gap-3 shadow-2xl"
         onClick={(event) => event.stopPropagation()}
       >
         <p className="text-xs text-ink-faint">From {item.peerName}</p>
