@@ -68,31 +68,24 @@ export function ReceiveDialog({ item, onDismiss }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4" onClick={onDismiss}>
       <div
-        className="bg-canvas-raised border border-canvas-deep rounded-xl p-5 w-full max-w-[min(90vw,380px)] max-h-[85vh] overflow-y-auto overscroll-contain flex flex-col gap-3 shadow-2xl"
+        className="bg-canvas-raised border border-canvas-deep rounded-xl w-full max-w-[min(92vw,320px)] sm:max-w-[min(70vw,480px)] max-h-[85vh] flex flex-col shadow-2xl"
         onClick={(event) => event.stopPropagation()}
       >
-        <p className="text-xs text-ink-faint">From {item.peerName}</p>
+        <div className="overflow-y-auto overscroll-contain p-5 pb-3 flex flex-col gap-3 min-h-0">
+          <p className="text-xs text-ink-faint">From {item.peerName}</p>
 
-        {item.kind === "file" && (
-          <>
-            {previewUrl && (
-              <img src={previewUrl} alt={item.name} className="rounded-lg max-h-[45vh] w-full object-contain" />
-            )}
-            <p className="font-serif text-[15px] text-ink break-all">{item.name}</p>
-            <p className="text-xs text-ink-faint">{formatBytes(item.blob.size)}</p>
-            <button
-              type="button"
-              onClick={handleDownload}
-              className="bg-accent hover:bg-accent-strong text-canvas-raised text-[13px] font-semibold rounded-lg py-2.5 transition-colors"
-            >
-              Download
-            </button>
-          </>
-        )}
+          {item.kind === "file" && (
+            <>
+              {previewUrl && (
+                <img src={previewUrl} alt={item.name} className="rounded-lg max-h-[50vh] w-full object-contain" />
+              )}
+              <p className="font-serif text-[15px] text-ink break-all">{item.name}</p>
+              <p className="text-xs text-ink-faint">{formatBytes(item.blob.size)}</p>
+            </>
+          )}
 
-        {item.kind === "text" && (
-          <>
-            {isUrl(item.content) ? (
+          {item.kind === "text" &&
+            (isUrl(item.content) ? (
               <a
                 href={item.content.trim()}
                 target="_blank"
@@ -103,7 +96,20 @@ export function ReceiveDialog({ item, onDismiss }: Props) {
               </a>
             ) : (
               <p className="text-ink text-sm break-all whitespace-pre-wrap">{item.content}</p>
-            )}
+            ))}
+        </div>
+
+        <div className="p-5 pt-3 flex flex-col gap-3 shrink-0">
+          {item.kind === "file" && (
+            <button
+              type="button"
+              onClick={handleDownload}
+              className="bg-accent hover:bg-accent-strong text-canvas-raised text-[13px] font-semibold rounded-lg py-2.5 transition-colors"
+            >
+              Download
+            </button>
+          )}
+          {item.kind === "text" && (
             <button
               type="button"
               onClick={handleCopy}
@@ -111,16 +117,15 @@ export function ReceiveDialog({ item, onDismiss }: Props) {
             >
               {copied ? "Copied" : "Copy"}
             </button>
-          </>
-        )}
-
-        <button
-          type="button"
-          onClick={onDismiss}
-          className="text-ink-faint hover:text-ink text-xs self-start"
-        >
-          Close
-        </button>
+          )}
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="text-ink-faint hover:text-ink text-xs self-start"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );

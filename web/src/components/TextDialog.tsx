@@ -26,7 +26,7 @@ export function TextDialog({ peerName, position, onSend, onClose }: Props) {
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} />
       <div
-        className="fixed z-50 -translate-x-1/2 flex flex-col gap-2 bg-canvas-raised border border-canvas-deep rounded-xl p-3.5 shadow-2xl w-60"
+        className="fixed z-50 -translate-x-1/2 flex flex-col gap-2 bg-canvas-raised border border-canvas-deep rounded-xl p-3.5 shadow-2xl w-64 sm:w-80"
         style={position}
         onClick={(event) => event.stopPropagation()}
       >

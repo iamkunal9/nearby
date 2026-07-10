@@ -52,7 +52,7 @@ export function PeerRadar({ myDeviceName, peers, transfers, onSendFile, onSendTe
   }
 
   function openTextDialog(peer: PeerInfo, clientX: number, clientY: number) {
-    const dialogHalfWidth = 120;
+    const dialogHalfWidth = window.innerWidth >= 640 ? 160 : 128;
     const margin = 12;
     const clampedX = Math.min(
       Math.max(clientX, dialogHalfWidth + margin),
