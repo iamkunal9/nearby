@@ -8,6 +8,24 @@ SnapDrop-style peer-to-peer file sharing in the browser. Open the URL on devices
 
 Open that URL on two devices on the same Wi‑Fi / LAN — no install, no account. Self-hosting is optional if you want your own instance.
 
+## FAQ
+
+### What is Nearby?
+
+Nearby is a SnapDrop-style **peer-to-peer file sharing** web app. Devices on the same local network see each other automatically and send files or text **directly browser-to-browser** over WebRTC.
+
+### Are files uploaded to a server?
+
+**No.** File bytes never go through the server. A Cloudflare Worker only relays signaling (SDP/ICE) so peers can find each other and open a WebRTC connection.
+
+### Do both devices need the same Wi‑Fi?
+
+**Yes.** Discovery is same-network only (grouped by public IP, or IPv6 `/64`). There is no TURN relay for internet-wide transfers by design.
+
+### Can I host my own instance?
+
+**Yes.** Deploy the Worker + Pages app on your Cloudflare account — see [Deploy your own](#deploy-your-own-cloudflare) below. Source: [github.com/iamkunal9/nearby](https://github.com/iamkunal9/nearby).
+
 ## Stack
 
 | Piece | Tech |

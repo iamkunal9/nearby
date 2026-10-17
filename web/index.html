@@ -3,10 +3,128 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Nearby</title>
+
+    <title>Nearby — Share files on your network (P2P, no upload)</title>
+    <meta
+      name="description"
+      content="Nearby is SnapDrop-style peer-to-peer file sharing in the browser. Devices on the same Wi‑Fi auto-discover each other and transfer files or text via WebRTC — nothing is uploaded to a server."
+    />
+    <meta
+      name="keywords"
+      content="Nearby, SnapDrop, P2P file sharing, WebRTC, local network, peer to peer, share files WiFi, no upload, Cloudflare Workers"
+    />
+    <meta name="author" content="iamkunal9" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#d5602f" />
+    <link rel="canonical" href="https://nearby.iamkunal9.in/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="llms" href="/llms.txt" type="text/plain" title="LLM context for Nearby" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Nearby" />
+    <meta property="og:url" content="https://nearby.iamkunal9.in/" />
+    <meta property="og:title" content="Nearby — Share files on your network" />
+    <meta
+      property="og:description"
+      content="SnapDrop-style P2P file sharing. Same Wi‑Fi devices see each other and transfer directly via WebRTC — no accounts, no uploads."
+    />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Nearby — Share files on your network" />
+    <meta
+      name="twitter:description"
+      content="SnapDrop-style P2P file sharing over WebRTC. Same-network auto-discovery, no server-side uploads."
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "@id": "https://nearby.iamkunal9.in/#app",
+            "name": "Nearby",
+            "url": "https://nearby.iamkunal9.in/",
+            "description": "SnapDrop-style peer-to-peer file sharing in the browser. Devices on the same local network auto-discover each other and transfer files or text directly via WebRTC. The server only relays signaling and never sees file bytes.",
+            "applicationCategory": "UtilitiesApplication",
+            "operatingSystem": "Any",
+            "browserRequirements": "Requires a modern browser with WebRTC",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "isAccessibleForFree": true,
+            "license": "https://github.com/iamkunal9/nearby/blob/main/LICENSE.md",
+            "codeRepository": "https://github.com/iamkunal9/nearby",
+            "author": {
+              "@type": "Person",
+              "name": "iamkunal9",
+              "url": "https://github.com/iamkunal9"
+            }
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://nearby.iamkunal9.in/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What is Nearby?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Nearby is a SnapDrop-style peer-to-peer file sharing web app. Open it on devices on the same network to share files or text directly browser-to-browser via WebRTC."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Are my files uploaded to a server?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. File and text bytes travel on a direct WebRTC DataChannel between devices. The Cloudflare Worker only relays signaling messages (SDP/ICE) for discovery and connection setup."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Do devices need to be on the same network?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Nearby groups devices by public IP (or IPv6 /64 prefix). It is same-network only by design and does not use a TURN relay for cross-network transfers."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I self-host Nearby?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. The open-source project deploys to Cloudflare Workers (signaling) and Cloudflare Pages (frontend). See the GitHub README for Bun-based install and deploy steps."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <main>
+        <h1>Nearby</h1>
+        <p>
+          SnapDrop-style peer-to-peer file sharing in the browser. Devices on the same Wi‑Fi
+          auto-discover each other and transfer files or text via WebRTC — nothing is uploaded
+          to a server.
+        </p>
+        <p>
+          JavaScript is required to use the app.
+          Source and self-hosting docs:
+          <a href="https://github.com/iamkunal9/nearby">github.com/iamkunal9/nearby</a>.
+        </p>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

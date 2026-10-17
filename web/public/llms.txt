@@ -1,0 +1,30 @@
+# Nearby
+
+> Nearby is a SnapDrop-style peer-to-peer file sharing web app. Devices on the same local network auto-discover each other and transfer files or text directly browser-to-browser via WebRTC. A Cloudflare Worker only relays signaling (SDP/ICE) and never sees file bytes.
+
+Live demo: https://nearby.iamkunal9.in/
+Source: https://github.com/iamkunal9/nearby
+License: MIT
+
+## What it is
+
+- Browser-only P2P file and text sharing (no install, no accounts)
+- Same-network auto-discovery (grouped by public IP / IPv6 /64)
+- Direct WebRTC DataChannel transfer — signaling-only server
+- Self-hostable on Cloudflare Workers + Pages (free tier)
+
+## What it is not
+
+- Not a cloud file host — files are not uploaded to a server
+- Not cross-network / internet-wide sharing (no TURN relay by design)
+- Not an account-based sync product
+
+## Docs
+
+- [README](https://github.com/iamkunal9/nearby/blob/main/README.md): try it, local dev, deploy your own
+- [Design spec](https://github.com/iamkunal9/nearby/blob/main/docs/superpowers/specs/2026-07-09-p2p-file-share-design.md): architecture
+
+## Optional
+
+- [robots.txt](https://nearby.iamkunal9.in/robots.txt)
+- [sitemap.xml](https://nearby.iamkunal9.in/sitemap.xml)
