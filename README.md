@@ -1,6 +1,6 @@
 # Nearby
 
-SnapDrop-style peer-to-peer file sharing in the browser. Open the URL on devices on the same network, see them appear, drag a file (or send text) — transfer goes **device-to-device via WebRTC**. The Cloudflare Worker only relays signaling (SDP/ICE); it never sees file bytes.
+Peer-to-peer file sharing in the browser. Open the URL on devices on the same network, see them appear, drag a file (or send text) — transfer goes **device-to-device via WebRTC**. The Cloudflare Worker only relays signaling (SDP/ICE); it never sees file bytes.
 
 ## Try it
 
@@ -8,11 +8,17 @@ SnapDrop-style peer-to-peer file sharing in the browser. Open the URL on devices
 
 Open that URL on two devices on the same Wi‑Fi / LAN — no install, no account. Self-hosting is optional if you want your own instance.
 
+**Looking for a SnapDrop alternative?** → [nearby.iamkunal9.in/snapdrop-alternative](https://nearby.iamkunal9.in/snapdrop-alternative/) (comparison; Nearby is independent — not affiliated with SnapDrop or LimeWire).
+
 ## FAQ
 
 ### What is Nearby?
 
-Nearby is a SnapDrop-style **peer-to-peer file sharing** web app. Devices on the same local network see each other automatically and send files or text **directly browser-to-browser** over WebRTC.
+Nearby is a **peer-to-peer file sharing** web app. Devices on the same local network see each other automatically and send files or text **directly browser-to-browser** over WebRTC.
+
+### Is Nearby a SnapDrop alternative?
+
+**Yes, in the same category** — same habit (browser tabs on one Wi‑Fi, P2P send), different product. Nearby is MIT-licensed and self-hostable on Cloudflare. It is **not** SnapDrop and is **not** affiliated with LimeWire. Details: [SnapDrop alternative](https://nearby.iamkunal9.in/snapdrop-alternative/).
 
 ### Are files uploaded to a server?
 

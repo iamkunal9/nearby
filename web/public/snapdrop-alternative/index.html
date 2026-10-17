@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SnapDrop Alternative — Nearby (open source, self-host on Cloudflare)</title>
+    <meta
+      name="description"
+      content="Looking for a SnapDrop alternative? Nearby is an open-source P2P file sharing app for the same Wi‑Fi: WebRTC transfers, no uploads, self-hostable on Cloudflare Workers. Not affiliated with SnapDrop or LimeWire."
+    />
+    <meta
+      name="keywords"
+      content="SnapDrop alternative, SnapDrop open source, PairDrop alternative, P2P file sharing, WebRTC, Nearby, self-host SnapDrop"
+    />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#d5602f" />
+    <link rel="canonical" href="https://nearby.iamkunal9.in/snapdrop-alternative/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Nearby" />
+    <meta property="og:url" content="https://nearby.iamkunal9.in/snapdrop-alternative/" />
+    <meta property="og:title" content="SnapDrop Alternative — Nearby" />
+    <meta
+      property="og:description"
+      content="Open-source same-network P2P file sharing via WebRTC. Self-host on Cloudflare. Not affiliated with SnapDrop or LimeWire."
+    />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="SnapDrop Alternative — Nearby" />
+    <meta
+      name="twitter:description"
+      content="Open-source SnapDrop-style file sharing for your Wi‑Fi. WebRTC, no uploads, Cloudflare self-host."
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is the best open-source SnapDrop alternative?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Nearby is an open-source SnapDrop-style option for same-network browser transfers via WebRTC, with no file uploads to a server. You can use the live demo or self-host on Cloudflare Workers and Pages. PairDrop is another popular maintained fork if you need cross-network pairing codes."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is Nearby affiliated with SnapDrop or LimeWire?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Nearby is an independent MIT-licensed project. SnapDrop is a separate product; its live site was acquired by LimeWire. Nearby does not use SnapDrop branding as its product name and is not affiliated with either."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does Nearby upload my files?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. File bytes go device-to-device over a WebRTC DataChannel. The signaling server only relays SDP/ICE messages."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I self-host a SnapDrop-like tool?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Nearby deploys to Cloudflare Workers (signaling Durable Object) and Cloudflare Pages (frontend). See the GitHub README for Bun-based install and deploy steps."
+            }
+          }
+        ]
+      }
+    </script>
+
+    <style>
+      :root {
+        --canvas: #ece8ea;
+        --ink: #2b2630;
+        --ink-soft: #8d8390;
+        --accent: #d5602f;
+        --raised: #f8f6f6;
+        --line: #dcd6d9;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        background: var(--canvas);
+        color: var(--ink);
+        line-height: 1.55;
+      }
+      main {
+        max-width: 42rem;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 4rem;
+      }
+      a { color: var(--accent); }
+      h1 { font-size: 1.75rem; line-height: 1.25; margin: 0 0 0.75rem; }
+      h2 { font-size: 1.15rem; margin: 2rem 0 0.75rem; }
+      p, li { color: var(--ink); }
+      .lede { font-size: 1.05rem; color: var(--ink-soft); margin: 0 0 1.5rem; }
+      .cta {
+        display: inline-block;
+        margin: 0.25rem 0.5rem 0.25rem 0;
+        padding: 0.7rem 1.1rem;
+        border-radius: 0.5rem;
+        background: var(--accent);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .cta.secondary {
+        background: transparent;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--raised);
+        border-radius: 0.75rem;
+        overflow: hidden;
+        font-size: 0.95rem;
+      }
+      th, td {
+        text-align: left;
+        padding: 0.75rem 0.85rem;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      th { font-weight: 600; }
+      .note {
+        margin-top: 2rem;
+        padding: 1rem 1.1rem;
+        background: var(--raised);
+        border-radius: 0.75rem;
+        font-size: 0.9rem;
+        color: var(--ink-soft);
+      }
+      footer { margin-top: 2.5rem; font-size: 0.9rem; color: var(--ink-soft); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p><a href="/">← Nearby</a></p>
+      <h1>SnapDrop alternative: Nearby</h1>
+      <p class="lede">
+        Want the classic “open a tab on both devices and send a file” habit — without depending on
+        SnapDrop’s current live site? <strong>Nearby</strong> is an independent open-source option
+        for same-network peer-to-peer transfers in the browser.
+      </p>
+
+      <p>
+        <a class="cta" href="/">Try Nearby</a>
+        <a class="cta secondary" href="https://github.com/iamkunal9/nearby">View source</a>
+      </p>
+
+      <h2>Quick answer</h2>
+      <ul>
+        <li><strong>Nearby</strong> — browser P2P on the same Wi‑Fi, MIT-licensed, self-host on Cloudflare Workers + Pages.</li>
+        <li><strong>Not affiliated</strong> with SnapDrop or LimeWire. Nearby is a separate project.</li>
+        <li>Files are <strong>not uploaded</strong> to a server; WebRTC carries bytes device-to-device.</li>
+        <li>If you need <strong>cross-network pairing codes</strong>, look at PairDrop; Nearby is same-network by design.</li>
+      </ul>
+
+      <h2>Nearby vs classic SnapDrop</h2>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Nearby</th>
+            <th>Classic SnapDrop idea</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Same Wi‑Fi auto-discovery</td>
+            <td>Yes</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <td>Transfer path</td>
+            <td>WebRTC P2P (signaling only on server)</td>
+            <td>WebRTC P2P (classic)</td>
+          </tr>
+          <tr>
+            <td>Accounts / installs</td>
+            <td>None</td>
+            <td>None</td>
+          </tr>
+          <tr>
+            <td>Cross-network / TURN</td>
+            <td>No (by design)</td>
+            <td>Typically same-network</td>
+          </tr>
+          <tr>
+            <td>Self-host</td>
+            <td>Cloudflare Workers + Pages (Bun)</td>
+            <td>Own Node / Docker instance</td>
+          </tr>
+          <tr>
+            <td>License / affiliation</td>
+            <td>MIT · independent</td>
+            <td>Separate project (live site later acquired by LimeWire)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Who Nearby is for</h2>
+      <ul>
+        <li>You want a <strong>SnapDrop alternative</strong> that stays auditable and self-hostable.</li>
+        <li>Both devices are on the <strong>same network</strong> (home, office, hotspot).</li>
+        <li>You prefer a small Cloudflare-native stack over running Node yourself.</li>
+      </ul>
+
+      <h2>Who should pick something else</h2>
+      <ul>
+        <li><strong>PairDrop</strong> — if you need pairing codes / rooms across networks.</li>
+        <li><strong>LocalSend</strong> — if you want native apps and are fine installing software.</li>
+        <li><strong>AirDrop / Quick Share</strong> — if you stay inside one vendor ecosystem.</li>
+      </ul>
+
+      <h2>Try it or self-host</h2>
+      <p>
+        Live demo: <a href="https://nearby.iamkunal9.in/">https://nearby.iamkunal9.in/</a><br />
+        Deploy your own: <a href="https://github.com/iamkunal9/nearby">github.com/iamkunal9/nearby</a>
+      </p>
+
+      <div class="note">
+        <strong>Trademark note:</strong> SnapDrop® / Snapdrop is a mark of its respective owners.
+        Nearby mentions SnapDrop only to describe category and alternatives. Nearby is not the
+        official SnapDrop product and is not endorsed by SnapDrop or LimeWire.
+      </div>
+
+      <footer>
+        <a href="/">Use Nearby</a> ·
+        <a href="https://github.com/iamkunal9/nearby">Source</a> ·
+        <a href="/llms.txt">llms.txt</a>
+      </footer>
+    </main>
+  </body>
+</html>

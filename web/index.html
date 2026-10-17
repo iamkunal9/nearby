@@ -4,14 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <title>Nearby — Share files on your network (P2P, no upload)</title>
+    <title>Nearby — Share files on your Wi‑Fi (P2P, no upload)</title>
     <meta
       name="description"
-      content="Nearby is SnapDrop-style peer-to-peer file sharing in the browser. Devices on the same Wi‑Fi auto-discover each other and transfer files or text via WebRTC — nothing is uploaded to a server."
+      content="Nearby lets devices on the same Wi‑Fi share files and text directly in the browser via WebRTC. No accounts, no installs, nothing uploaded to a server. Free and open source."
     />
     <meta
       name="keywords"
-      content="Nearby, SnapDrop, P2P file sharing, WebRTC, local network, peer to peer, share files WiFi, no upload, Cloudflare Workers"
+      content="Nearby, P2P file sharing, WebRTC, share files WiFi, local network file transfer, peer to peer, no upload, open source, Cloudflare Workers"
     />
     <meta name="author" content="iamkunal9" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -24,19 +24,19 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Nearby" />
     <meta property="og:url" content="https://nearby.iamkunal9.in/" />
-    <meta property="og:title" content="Nearby — Share files on your network" />
+    <meta property="og:title" content="Nearby — Share files on your Wi‑Fi" />
     <meta
       property="og:description"
-      content="SnapDrop-style P2P file sharing. Same Wi‑Fi devices see each other and transfer directly via WebRTC — no accounts, no uploads."
+      content="Same Wi‑Fi devices see each other and transfer files or text via WebRTC — no accounts, no uploads. Free and open source."
     />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter / X -->
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Nearby — Share files on your network" />
+    <meta name="twitter:title" content="Nearby — Share files on your Wi‑Fi" />
     <meta
       name="twitter:description"
-      content="SnapDrop-style P2P file sharing over WebRTC. Same-network auto-discovery, no server-side uploads."
+      content="P2P file sharing in the browser. Same-network auto-discovery, WebRTC transfers, no server-side uploads."
     />
 
     <script type="application/ld+json">
@@ -48,7 +48,7 @@
             "@id": "https://nearby.iamkunal9.in/#app",
             "name": "Nearby",
             "url": "https://nearby.iamkunal9.in/",
-            "description": "SnapDrop-style peer-to-peer file sharing in the browser. Devices on the same local network auto-discover each other and transfer files or text directly via WebRTC. The server only relays signaling and never sees file bytes.",
+            "description": "Nearby lets devices on the same local network share files and text directly browser-to-browser via WebRTC. The server only relays signaling and never sees file bytes.",
             "applicationCategory": "UtilitiesApplication",
             "operatingSystem": "Any",
             "browserRequirements": "Requires a modern browser with WebRTC",
@@ -75,7 +75,7 @@
                 "name": "What is Nearby?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Nearby is a SnapDrop-style peer-to-peer file sharing web app. Open it on devices on the same network to share files or text directly browser-to-browser via WebRTC."
+                  "text": "Nearby is a peer-to-peer file sharing web app. Open it on devices on the same Wi‑Fi to share files or text directly browser-to-browser via WebRTC — no accounts and no uploads to a server."
                 }
               },
               {
@@ -92,6 +92,14 @@
                 "acceptedAnswer": {
                   "@type": "Answer",
                   "text": "Yes. Nearby groups devices by public IP (or IPv6 /64 prefix). It is same-network only by design and does not use a TURN relay for cross-network transfers."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is Nearby a SnapDrop alternative?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Nearby offers the same core habit as classic SnapDrop — open a browser tab on the same network and send files peer-to-peer — as a separate open-source project you can self-host on Cloudflare. It is not affiliated with SnapDrop or LimeWire. See https://nearby.iamkunal9.in/snapdrop-alternative/ for a full comparison."
                 }
               },
               {
@@ -114,13 +122,16 @@
       <main>
         <h1>Nearby</h1>
         <p>
-          SnapDrop-style peer-to-peer file sharing in the browser. Devices on the same Wi‑Fi
-          auto-discover each other and transfer files or text via WebRTC — nothing is uploaded
-          to a server.
+          Share files and text between devices on the same Wi‑Fi — directly in the browser via
+          WebRTC. No accounts, no installs, nothing uploaded to a server.
+        </p>
+        <p>
+          Looking for a SnapDrop alternative?
+          <a href="/snapdrop-alternative/">Compare Nearby to SnapDrop</a>.
         </p>
         <p>
           JavaScript is required to use the app.
-          Source and self-hosting docs:
+          Source:
           <a href="https://github.com/iamkunal9/nearby">github.com/iamkunal9/nearby</a>.
         </p>
       </main>

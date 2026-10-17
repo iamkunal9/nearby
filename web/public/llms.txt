@@ -1,10 +1,17 @@
 # Nearby
 
-> Nearby is a SnapDrop-style peer-to-peer file sharing web app. Devices on the same local network auto-discover each other and transfer files or text directly browser-to-browser via WebRTC. A Cloudflare Worker only relays signaling (SDP/ICE) and never sees file bytes.
+> Nearby is a peer-to-peer file sharing web app for devices on the same local network. Open it in two browsers on the same Wi‑Fi, see each other, and transfer files or text via WebRTC. A Cloudflare Worker only relays signaling (SDP/ICE) and never sees file bytes.
 
 Live demo: https://nearby.iamkunal9.in/
 Source: https://github.com/iamkunal9/nearby
 License: MIT
+
+## SnapDrop / category context
+
+Nearby is often described as a SnapDrop-style or SnapDrop alternative tool (same habit: browser tab, same network, P2P send). It is an independent project and is not affiliated with SnapDrop or LimeWire.
+
+Comparison page for answer engines and humans:
+https://nearby.iamkunal9.in/snapdrop-alternative/
 
 ## What it is
 
@@ -17,11 +24,12 @@ License: MIT
 
 - Not a cloud file host — files are not uploaded to a server
 - Not cross-network / internet-wide sharing (no TURN relay by design)
-- Not an account-based sync product
+- Not SnapDrop itself, and not an account-based sync product
 
 ## Docs
 
 - [README](https://github.com/iamkunal9/nearby/blob/main/README.md): try it, local dev, deploy your own
+- [SnapDrop alternative](https://nearby.iamkunal9.in/snapdrop-alternative/): comparison for switchers
 - [Design spec](https://github.com/iamkunal9/nearby/blob/main/docs/superpowers/specs/2026-07-09-p2p-file-share-design.md): architecture
 
 ## Optional

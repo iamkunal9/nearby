@@ -2,7 +2,7 @@
   "name": "nearby",
   "private": true,
   "version": "0.1.0",
-  "description": "SnapDrop-style P2P file sharing over WebRTC on Cloudflare Workers",
+  "description": "Nearby — P2P file sharing over WebRTC on the same network. Self-host on Cloudflare Workers.",
   "homepage": "https://nearby.iamkunal9.in/",
   "repository": {
     "type": "git",
