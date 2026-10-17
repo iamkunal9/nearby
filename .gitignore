@@ -4,6 +4,13 @@ dist/
 .dev.vars
 *.log
 .DS_Store
-.env*.local
-web/.env.production
+
+# Env / secrets — never commit real production URLs or tokens
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Local agent / tooling
 .superpowers/
+.fallow/

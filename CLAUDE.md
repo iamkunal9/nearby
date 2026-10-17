@@ -8,7 +8,7 @@ SnapDrop-style peer-to-peer file sharing web app, Cloudflare-native. Devices on 
 
 ## Structure
 
-pnpm workspace with two independent packages — they do not import from each other and are deployed separately:
+Bun workspace with two independent packages — they do not import from each other and are deployed separately:
 
 - `worker/` — Cloudflare Worker + Durable Object signaling server (TypeScript). `worker/src/index.ts` routes requests to the `Room` Durable Object (`worker/src/room.ts`) keyed by `CF-Connecting-IP`. Message types are defined in `worker/src/protocol.ts`.
 - `web/` — React 19 + Vite + TypeScript + Tailwind frontend. `web/src/lib/protocol.ts` hand-duplicates the worker's message types (deliberate — no cross-package import since they deploy independently). Core logic lives in `web/src/lib/signaling.ts` (WebSocket client) and `web/src/lib/webrtc.ts` (chunked WebRTC file transfer with backpressure). State is in `web/src/store/useStore.ts` (Zustand).
@@ -17,10 +17,11 @@ pnpm workspace with two independent packages — they do not import from each ot
 
 Run from the repo root unless noted:
 
-- `pnpm dev:worker` — run the signaling server locally (`wrangler dev`, `worker/`)
-- `pnpm dev:web` — run the frontend locally (`vite`, `web/`)
-- `pnpm test` — run both packages' test suites
-- Per-package: `cd worker && pnpm test` / `cd web && pnpm test`
+- `bun run dev:worker` — signaling server locally (`wrangler dev`, `worker/`)
+- `bun run dev:web` — frontend locally (`vite`, `web/`)
+- `bun run test` — both packages' Vitest suites (`bun test` alone is Bun's built-in runner — avoid it here)
+- `bun run deploy:worker` / `bun run deploy:web` — deploy to Cloudflare
+- Per-package: `cd worker && bun run test` / `cd web && bun run test`
 
 ## Testing gotcha (Windows)
 
@@ -28,5 +29,6 @@ Run from the repo root unless noted:
 
 ## Conventions
 
-- Git commits: author only as the repo owner (`iamkunal9`) — no `Co-Authored-By` trailers or other attribution.
+- Git commits: author only as the repo owner — no `Co-Authored-By` trailers or other attribution.
 - Same-network-only discovery by design — do not add cross-network pairing or TURN relay without updating the design spec first.
+- Never commit `web/.env.production` or real Worker URLs/tokens; use `web/.env.example` as the template.

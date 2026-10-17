@@ -23,7 +23,7 @@ A browser-based, peer-to-peer file sharing tool inspired by SnapDrop's ideology:
 | Signaling server | Cloudflare Worker + Durable Object, TypeScript | Native `WebSocket` API + WebSocket Hibernation API (not Node's `ws` package — doesn't run in Workers runtime) |
 | Room/peer grouping | Durable Object keyed by network fingerprint derived from client IP | Recreates SnapDrop's "devices on your network" auto-discovery |
 | File chunking | Native `ArrayBuffer` slicing over DataChannel, streamed (not buffered whole in memory) | Handles large files without exhausting RAM |
-| Tooling | pnpm, ESLint, Prettier, Wrangler CLI | `wrangler deploy` for both Pages and Worker |
+| Tooling | Bun workspaces, Wrangler CLI | `wrangler deploy` / Pages deploy for Worker + frontend |
 | Source control | Git + GitHub (`iamkunal9` account), new repo | Commits with no author name attribution beyond the repo owner — no co-author lines |
 
 ## Architecture

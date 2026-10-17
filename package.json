@@ -1,10 +1,23 @@
 {
-  "name": "p2p-file-share",
+  "name": "nearby",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "SnapDrop-style P2P file sharing over WebRTC on Cloudflare Workers",
+  "homepage": "https://nearby.iamkunal9.in/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iamkunal9/nearby.git"
+  },
+  "license": "MIT",
+  "packageManager": "bun@1.2.0",
+  "workspaces": ["worker", "web"],
   "scripts": {
-    "dev:worker": "pnpm --filter worker dev",
-    "dev:web": "pnpm --filter web dev",
-    "test": "pnpm --filter worker test && pnpm --filter web test"
+    "dev:worker": "bun --filter worker dev",
+    "dev:web": "bun --filter web dev",
+    "build:web": "bun --filter web build",
+    "test": "bun run --filter worker test && bun run --filter web test",
+    "deploy:worker": "bun --filter worker deploy",
+    "deploy:web": "bun --filter web deploy",
+    "deploy": "bun run deploy:worker && bun run deploy:web"
   }
 }

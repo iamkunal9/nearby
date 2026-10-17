@@ -1,3 +1,4 @@
+# Rename freely before first deploy if you want a different workers.dev hostname.
 name = "p2p-file-share-signaling"
 main = "src/index.ts"
 compatibility_date = "2026-01-01"
